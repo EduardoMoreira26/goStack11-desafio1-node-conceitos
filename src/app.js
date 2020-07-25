@@ -10,6 +10,7 @@ app.use(express.json());
 app.use(cors());
 
 const repositories = [];
+let likes = 0;
 
 //id verification
 function validateRepositoriesId(request, response, next){
@@ -30,9 +31,8 @@ app.get("/repositories", (request, response) => {
 });
 
 app.post("/repositories", (request, response) => {
-  const { title, url, techs} = request.body;
-  let likes = 0;
-
+  const { title, url, techs } = request.body;
+  
   const repositorie = { id: uuid(), title, url, techs, likes };
 
   repositories.push(repositorie);
@@ -44,19 +44,20 @@ app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
   const { title, url, techs } = request.body;
   
-  const repositorieId = repositories.findIndex(repositorie => repositorie.id === id);
+  const repositorieIndex = repositories.findIndex(repositorie => repositorie.id === id);
   
-  if(repositorieId < 0) {
-    return response.status(400).json({ error: "Project not found."}); 
+  if(repositorieIndex < 0) {
+    return response.status(400).json({ error: "Project Not Found."}); 
   }
   
   const repositorie = {
+    id,
     title,
     url,
     techs,
-  }
+  };
 
-  repositories[repositorieId] = repositorie;
+  repositories[repositorieIndex] = repositorie;
 
   return response.json(repositorie);
 
@@ -64,15 +65,38 @@ app.put("/repositories/:id", (request, response) => {
 });
 
 app.delete("/repositories/:id", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  const repositorieIndex = repositories.findIndex(repositorie => repositorie.id === id);
+  
+  if(repositorieIndex < 0) {
+    return response.status(400).json({ error: "Project Not Found."}); 
+  }
+
+  repositories.splice(repositorieIndex, 1);
+
+
+  return response.status(204).send();
 });
 
 app.post("/repositories/:id/like", (request, response) => {
-  // TODO
+  const { id } = request.params;
+
+  const repositorieIndex = repositories.findIndex(repositorie => repositorie.id === id);
+  
+  if(repositorieIndex < 0) {
+    return response.status(400).json({ error: "Project Not Found."}); 
+  }
+
+  let repositorie = repositories[repositorieIndex];repositorie.likes = repositorie.likes + 1;
+  repositories[repositorieIndex] = repositorie;
+
+  return response.status(200).json(repositorie);
+
 });
 
-// app.listen(3334, () => {
-//   console.log("Back-end started!");
-// })
+app.listen(3334, () => {
+  console.log("Back-end started!");
+});
 
 module.exports = app;
