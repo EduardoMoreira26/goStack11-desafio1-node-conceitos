@@ -2,7 +2,6 @@ const express = require("express");
 const cors = require("cors");
 const { uuid, isUuid } = require("uuidv4");
 
-// const { uuid } = require("uuidv4");
 
 const app = express();
 
@@ -106,8 +105,8 @@ app.post("/repositories/:id/like", (request, response) => {
 
 });
 
-// app.listen(3334, () => {
-//   console.log("Back-end started!");
-// });
+ app.listen(3334, () => {
+   console.log("Back-end started!");
+ });
 
 module.exports = app;
